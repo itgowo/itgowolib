@@ -1,12 +1,5 @@
 package com.itgowo.itgowolib;
 
-import android.app.Activity;
-import android.content.Context;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.view.View;
-import android.widget.ImageView;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -31,16 +24,19 @@ public class itgowoJsonTool {
     public <T> T JsonToObject(String mJsonString, Class<T> mClass) {
         return JsonTool.JsonToObject(mJsonString, mClass);
     }
+
     public <T> T JsonToObject(String mJsonString, Type mType) {
         return JsonTool.JsonToObject(mJsonString, mType);
     }
+
     private static class JsonTool {
         public static final String WARNING_JSON = "not found fastjson,not found Gson, 请在主工程中使用fastjson或者Gson库，不然无法处理Json，此工具内部不集成任何第三方，绿色无公害(ˇˍˇ) 想～";
         private static Class mFastJson = null;
         private static Object mGsonJson = null;
         private static boolean isFastJson = true;
         private static Method mJsonMethodToJsonString = null;
-        private static Method mJsonMethodToJsonObject = null;
+        private static Method mJsonMethodToJsonObjectClass = null;
+        private static Method mJsonMethodToJsonObjectType = null;
 
         /**
          * 用反射检查APP内集成的Json工具。
@@ -52,18 +48,20 @@ public class itgowoJsonTool {
                 mFastJson = Class.forName("com.alibaba.fastjson.JSON");
                 isFastJson = true;
                 mJsonMethodToJsonString = mFastJson.getMethod("toJSONString", Object.class);
-                mJsonMethodToJsonObject = mFastJson.getMethod("parseObject", String.class, Class.class);
+                mJsonMethodToJsonObjectClass = mFastJson.getMethod("parseObject", String.class, Class.class);
+                mJsonMethodToJsonObjectType = mFastJson.getMethod("parseObject", String.class, Type.class, Object.class);
             } catch (ClassNotFoundException mE) {
-
+                mE.printStackTrace();
             } catch (NoSuchMethodException mE) {
-
+                mE.printStackTrace();
             }
-            if (mFastJson == null || mJsonMethodToJsonString == null || mJsonMethodToJsonObject == null) {
+            if (mFastJson == null || mJsonMethodToJsonString == null || mJsonMethodToJsonObjectClass == null || mJsonMethodToJsonObjectType == null) {
                 isFastJson = false;
                 try {
                     Class mGsonClass = Class.forName("com.google.gson.Gson");
                     mGsonJson = mGsonClass.newInstance();
-                    mJsonMethodToJsonObject = mGsonClass.getDeclaredMethod("fromJson", String.class, Class.class);
+                    mJsonMethodToJsonObjectClass = mGsonClass.getDeclaredMethod("fromJson", String.class, Class.class);
+                    mJsonMethodToJsonObjectType = mGsonClass.getDeclaredMethod("fromJson", String.class, Type.class);
                     mJsonMethodToJsonString = mGsonClass.getDeclaredMethod("toJson", Object.class);
                 } catch (IllegalAccessException mE) {
                     mE.printStackTrace();
@@ -75,7 +73,7 @@ public class itgowoJsonTool {
                     mE.printStackTrace();
                 }
             }
-            if (mFastJson == null && mGsonJson == null || mJsonMethodToJsonString == null || mJsonMethodToJsonObject == null) {
+            if (mFastJson == null && mGsonJson == null || mJsonMethodToJsonString == null || mJsonMethodToJsonObjectClass == null) {
                 new Throwable(WARNING_JSON);
                 return false;
             }
@@ -124,7 +122,7 @@ public class itgowoJsonTool {
             if (mJsonString != null && mClass != null) {
                 if (isFastJson) {
                     try {
-                        return (T) mJsonMethodToJsonObject.invoke(null, mJsonString, mClass);
+                        return (T) mJsonMethodToJsonObjectClass.invoke(null, mJsonString, mClass);
                     } catch (IllegalAccessException mE) {
                         mE.printStackTrace();
                     } catch (InvocationTargetException mE) {
@@ -132,7 +130,7 @@ public class itgowoJsonTool {
                     }
                 } else {
                     try {
-                        return (T) mJsonMethodToJsonObject.invoke(mGsonJson, mJsonString, mClass);
+                        return (T) mJsonMethodToJsonObjectClass.invoke(mGsonJson, mJsonString, mClass);
                     } catch (IllegalAccessException mE) {
                         mE.printStackTrace();
                     } catch (InvocationTargetException mE) {
@@ -142,11 +140,12 @@ public class itgowoJsonTool {
             }
             return null;
         }
+
         protected static <T> T JsonToObject(String mJsonString, Type mType) {
             if (mJsonString != null && mType != null) {
                 if (isFastJson) {
                     try {
-                        return (T) mJsonMethodToJsonObject.invoke(null, mJsonString, mType);
+                        return (T) mJsonMethodToJsonObjectType.invoke(null, mJsonString, mType, null);
                     } catch (IllegalAccessException mE) {
                         mE.printStackTrace();
                     } catch (InvocationTargetException mE) {
@@ -154,7 +153,7 @@ public class itgowoJsonTool {
                     }
                 } else {
                     try {
-                        return (T) mJsonMethodToJsonObject.invoke(mGsonJson, mJsonString, mType);
+                        return (T) mJsonMethodToJsonObjectType.invoke(mGsonJson, mJsonString, mType);
                     } catch (IllegalAccessException mE) {
                         mE.printStackTrace();
                     } catch (InvocationTargetException mE) {
