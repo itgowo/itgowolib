@@ -1,5 +1,6 @@
 package com.itgowo.itgowolib;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -37,6 +38,7 @@ public class itgowoJsonTool {
         private static Method mJsonMethodToJsonString = null;
         private static Method mJsonMethodToJsonObjectClass = null;
         private static Method mJsonMethodToJsonObjectType = null;
+        private static Object mFeatures;
 
         /**
          * 用反射检查APP内集成的Json工具。
@@ -49,7 +51,10 @@ public class itgowoJsonTool {
                 isFastJson = true;
                 mJsonMethodToJsonString = mFastJson.getMethod("toJSONString", Object.class);
                 mJsonMethodToJsonObjectClass = mFastJson.getMethod("parseObject", String.class, Class.class);
-                mJsonMethodToJsonObjectType = mFastJson.getMethod("parseObject", String.class, Type.class, Object.class);
+                Class mFeatureClass = Class.forName("com.alibaba.fastjson.parser.Feature");
+                mFeatures = Array.newInstance(mFeatureClass, 1);
+                Array.set(mFeatures, 0, mFeatureClass.getEnumConstants()[0]);
+                mJsonMethodToJsonObjectType = mFastJson.getMethod("parseObject", String.class, Type.class, Array.newInstance(mFeatureClass, 1).getClass());
             } catch (ClassNotFoundException mE) {
                 mE.printStackTrace();
             } catch (NoSuchMethodException mE) {
@@ -145,10 +150,8 @@ public class itgowoJsonTool {
             if (mJsonString != null && mType != null) {
                 if (isFastJson) {
                     try {
-                        return (T) mJsonMethodToJsonObjectType.invoke(null, mJsonString, mType, null);
-                    } catch (IllegalAccessException mE) {
-                        mE.printStackTrace();
-                    } catch (InvocationTargetException mE) {
+                        return (T) mJsonMethodToJsonObjectType.invoke(null, mJsonString, mType, mFeatures);
+                    } catch (Exception mE) {
                         mE.printStackTrace();
                     }
                 } else {

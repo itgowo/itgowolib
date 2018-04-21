@@ -3,7 +3,6 @@ package com.itgowo.itgowodemo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.alibaba.fastjson.JSON;
 import com.google.gson.Gson;
 import com.itgowo.itgowolib.itgowo;
 import com.itgowo.itgowolib.itgowoNetTool;
@@ -17,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        final String jsonstr = JSON.toJSONString(new Entity().setAge(22).setName("aaaadfa"));
+        final String jsonstr = new Gson().toJson(new Entity().setAge(22).setName("aaaadfa"));
         itgowo.netTool().initHttpClient(new itgowoNetTool.onRequestDataListener() {
             @Override
             public void onRequest(String url, Map head, String body, itgowoNetTool.onRequestDataListener onRequestDataListener, itgowoNetTool.onReceviceDataListener listener) {
