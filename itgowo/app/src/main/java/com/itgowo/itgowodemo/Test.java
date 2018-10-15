@@ -1,10 +1,10 @@
 package com.itgowo.itgowodemo;
 
 import com.google.gson.Gson;
-import com.itgowo.Http.HttpClient;
-import com.itgowo.Http.Method;
-import com.itgowo.Http.Response;
-import com.itgowo.Http.onCallbackListener;
+import com.itgowo.http.HttpClient;
+import com.itgowo.http.Method;
+import com.itgowo.http.Response;
+import com.itgowo.http.onCallbackListener;
 
 public class Test {
     public static void testHttpSync(){

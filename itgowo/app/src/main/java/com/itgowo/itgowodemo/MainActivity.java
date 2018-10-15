@@ -3,15 +3,7 @@ package com.itgowo.itgowodemo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.google.gson.Gson;
-import com.itgowo.Http.HttpClient;
-import com.itgowo.Http.Method;
-import com.itgowo.Http.Response;
-import com.itgowo.itgowolib.itgowo;
 import com.itgowo.itgowolib.itgowoNetTool;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 

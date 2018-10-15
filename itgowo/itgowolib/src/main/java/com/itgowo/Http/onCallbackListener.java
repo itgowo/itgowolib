@@ -1,4 +1,4 @@
-package com.itgowo.Http;
+package com.itgowo.http;
 
 public interface onCallbackListener {
     void onError(Response response, Exception e);

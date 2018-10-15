@@ -1,4 +1,4 @@
-package com.itgowo.Http;
+package com.itgowo.http;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;

@@ -1,4 +1,4 @@
-package com.itgowo.Http;
+package com.itgowo.http;
 
 import android.os.Handler;
 import android.os.Looper;

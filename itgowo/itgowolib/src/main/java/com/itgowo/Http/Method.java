@@ -1,4 +1,4 @@
-package com.itgowo.Http;
+package com.itgowo.http;
 /**
  * @author lujianchao
  * 2018-10-15
