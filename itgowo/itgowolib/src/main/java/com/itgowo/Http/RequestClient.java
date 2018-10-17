@@ -19,11 +19,11 @@ public class RequestClient implements Runnable {
     private boolean callbackOnMainThread;
     private Handler handler;
     private int timeout = 15000;
-    private Response response = new Response();
+    private HttpResponse response = new HttpResponse();
 
     public RequestClient(String url, String method, String reqestStr, Handler handler, int timeout, onCallbackListener listener) {
         this.listener = listener;
-        this.reqestStr = reqestStr;
+        this.reqestStr = reqestStr == null ? "" : reqestStr;
         this.requestMethod = method;
         response.setMethod(requestMethod);
         this.callbackOnMainThread = handler != null;
@@ -87,7 +87,7 @@ public class RequestClient implements Runnable {
         }
     }
 
-    private void onSuccess(final Response response) {
+    private void onSuccess(final HttpResponse response) {
         if (callbackOnMainThread) {
             handler.post(new Runnable() {
                 @Override
@@ -100,7 +100,7 @@ public class RequestClient implements Runnable {
         }
     }
 
-    private void onError(final Response response, final Exception e) {
+    private void onError(final HttpResponse response, final Exception e) {
         if (callbackOnMainThread) {
             handler.post(new Runnable() {
                 @Override

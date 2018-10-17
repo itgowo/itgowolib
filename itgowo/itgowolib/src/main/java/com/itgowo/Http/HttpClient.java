@@ -50,9 +50,9 @@ public class HttpClient {
         executorService.execute(new RequestClient(url, method.getMethod(), requestJson,callbackOnMainThread? handler:null, timeout, listener));
     }
 
-    public static Response RequestSync(String url, Method method, String requestJson) throws Exception {
+    public static HttpResponse RequestSync(String url, Method method, String requestJson) throws Exception {
         FutureTask futureTask = (FutureTask) executorService.submit(new RequestClientSync(url, method.getMethod(), timeout, requestJson));
-        return (Response) futureTask.get();
+        return (HttpResponse) futureTask.get();
     }
 
 }

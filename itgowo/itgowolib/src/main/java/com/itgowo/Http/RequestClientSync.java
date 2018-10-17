@@ -9,16 +9,16 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.Callable;
 
-public class RequestClientSync implements Callable<Response> {
+public class RequestClientSync implements Callable<HttpResponse> {
     private URL url;
     private String reqestStr;
     private String requestMethod = "POST";
-    private int timeout=15000;
+    private int timeout = 15000;
 
-    public RequestClientSync(String url, String method,int timeout, String reqestStr) throws MalformedURLException {
-        this.reqestStr = reqestStr;
+    public RequestClientSync(String url, String method, int timeout, String reqestStr) throws MalformedURLException {
+        this.reqestStr = reqestStr == null ? "" : reqestStr;
         this.requestMethod = method;
-        this.timeout=timeout;
+        this.timeout = timeout;
         if (url != null) {
             if (!url.startsWith("http://") & !url.startsWith("https://")) {
                 url = "http://" + url;
@@ -29,10 +29,10 @@ public class RequestClientSync implements Callable<Response> {
     }
 
     @Override
-    public Response call() throws Exception {
+    public HttpResponse call() throws Exception {
         HttpURLConnection httpConn = null;
         httpConn = (HttpURLConnection) url.openConnection();
-        Response response = new Response();
+        HttpResponse response = new HttpResponse();
         //设置参数
         httpConn.setDoOutput(true);     //需要输出
         httpConn.setDoInput(true);      //需要输入
