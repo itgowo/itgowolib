@@ -29,7 +29,7 @@ publish {
     userOrg = 'itgowo'
     groupId = 'com.itgowo'
     artifactId = 'itgowolib'
-    publishVersion = '0.0.26'
+    publishVersion = '0.0.27'
     desc = 'An extension library of Android'
     website = 'https://github.com/hnsugar/itgowolib'
 }

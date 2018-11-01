@@ -7,6 +7,8 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 public class RequestClientSync implements Callable<HttpResponse> {
@@ -14,11 +16,15 @@ public class RequestClientSync implements Callable<HttpResponse> {
     private String reqestStr;
     private String requestMethod = "POST";
     private int timeout = 15000;
+    private Map<String, String> headers = new HashMap<>();
 
-    public RequestClientSync(String url, String method, int timeout, String reqestStr) throws MalformedURLException {
+    public RequestClientSync(String url, String method, Map<String, String> headers, int timeout, String reqestStr) throws MalformedURLException {
         this.reqestStr = reqestStr == null ? "" : reqestStr;
         this.requestMethod = method;
         this.timeout = timeout;
+        if (headers != null) {
+            this.headers.putAll(headers);
+        }
         if (url != null) {
             if (!url.startsWith("http://") & !url.startsWith("https://")) {
                 url = "http://" + url;
@@ -45,6 +51,10 @@ public class RequestClientSync implements Callable<HttpResponse> {
         httpConn.setRequestProperty("Connection", "Keep-Alive");// 维持长连接
         httpConn.setRequestProperty("Charset", "UTF-8");
 
+        for (Map.Entry<String, String> header : this.headers.entrySet()) {
+            httpConn.setRequestProperty(header.getKey(), header.getValue());
+        }
+
         //连接,也可以不用明文connect，使用下面的httpConn.getOutputStream()会自动connect
         httpConn.connect();
 
@@ -55,23 +65,14 @@ public class RequestClientSync implements Callable<HttpResponse> {
 
         //获得响应状态
         final int resultCode = httpConn.getResponseCode();
-        if (HttpURLConnection.HTTP_OK == resultCode) {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            InputStream inputStream = httpConn.getInputStream();
-            byte[] bytes = new byte[1024];
-            int count;
-            while ((count = inputStream.read(bytes)) != -1) {
-                outputStream.write(bytes, 0, count);
-            }
-//                StringBuffer sb = new StringBuffer();
-//                String readLine = new String();
-//                BufferedReader responseReader = new BufferedReader(new InputStreamReader(httpConn.getInputStream(), "UTF-8"));
-//                while ((readLine = responseReader.readLine()) != null) {
-//                    sb.append(readLine).append("\n");
-//                }
-//                responseReader.close();
-            return response.setBody(outputStream.toByteArray()).setRequest(reqestStr).setMethod(requestMethod);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        InputStream inputStream = httpConn.getInputStream();
+        byte[] bytes = new byte[1024];
+        int count;
+        while ((count = inputStream.read(bytes)) != -1) {
+            outputStream.write(bytes, 0, count);
         }
-        throw new Exception("http code:" + resultCode);
+        return response.setBody(outputStream.toByteArray()).setRequest(reqestStr).setMethod(requestMethod).setSuccess(HttpURLConnection.HTTP_OK == resultCode);
     }
 }

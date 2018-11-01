@@ -5,6 +5,7 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -36,19 +37,19 @@ public class HttpClient {
         timeout = timeout1;
     }
 
-    public static void RequestGet(String url, String requestJson, onCallbackListener listener) {
-        Request(url, Method.GET, requestJson, true, listener);
+    public static void RequestGet(String url, Map<String, String> headers, String requestJson, onCallbackListener listener) {
+        Request(url, Method.GET, headers, requestJson, true, listener);
     }
 
-    public static void RequestPOST(String url, String requestJson, onCallbackListener listener) {
-        Request(url, Method.POST, requestJson, true, listener);
+    public static void RequestPOST(String url, Map<String, String> headers, String requestJson, onCallbackListener listener) {
+        Request(url, Method.POST, headers, requestJson, true, listener);
     }
 
-    public static void Request(String url, Method method, String requestJson, boolean callbackOnMainThread, onCallbackListener listener) {
+    public static void Request(String url, Method method, Map<String, String> headers, String requestJson, boolean callbackOnMainThread, onCallbackListener listener) {
         if (handler == null) {
             handler = new Handler(Looper.getMainLooper());
         }
-        executorService.execute(new RequestClient(url, method.getMethod(), requestJson, callbackOnMainThread ? handler : null, timeout, listener));
+        executorService.execute(new RequestClient(url, method.getMethod(), headers, requestJson, callbackOnMainThread ? handler : null, timeout, listener));
     }
 
     public static void uploadFiles(String url, List<String> uploadFiles, boolean callbackOnMainThread, onUploadFileCallbackListener listener) {
@@ -65,8 +66,8 @@ public class HttpClient {
         executorService.execute(new RequestClientDownloadFile(url, fileDir, callbackOnMainThread ? handler : null, timeout, listener));
     }
 
-    public static HttpResponse RequestSync(String url, Method method, String requestJson) throws Exception {
-        FutureTask futureTask = (FutureTask) executorService.submit(new RequestClientSync(url, method.getMethod(), timeout, requestJson));
+    public static HttpResponse RequestSync(String url, Method method, Map<String, String> headers, String requestJson) throws Exception {
+        FutureTask futureTask = (FutureTask) executorService.submit(new RequestClientSync(url, method.getMethod(), headers, timeout, requestJson));
         return (HttpResponse) futureTask.get();
     }
 
