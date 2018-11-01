@@ -52,7 +52,6 @@ public class RequestClientSync implements Callable<HttpResponse> {
         BufferedWriter bos = new BufferedWriter(new OutputStreamWriter(httpConn.getOutputStream()));
         bos.write(reqestStr);
         bos.flush();
-        bos.close();
 
         //获得响应状态
         final int resultCode = httpConn.getResponseCode();

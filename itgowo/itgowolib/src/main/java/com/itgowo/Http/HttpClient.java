@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -25,7 +26,7 @@ public class HttpClient {
     private static ExecutorService executorService = new ThreadPoolExecutor(2, 15, 60 * 1000 * 3, TimeUnit.SECONDS, new LinkedBlockingDeque<Runnable>(), new ThreadFactory() {
         @Override
         public Thread newThread(@NonNull Runnable r) {
-            Thread thread=new Thread(r);
+            Thread thread = new Thread(r);
             thread.setName(TAG);
             return thread;
         }
@@ -47,7 +48,21 @@ public class HttpClient {
         if (handler == null) {
             handler = new Handler(Looper.getMainLooper());
         }
-        executorService.execute(new RequestClient(url, method.getMethod(), requestJson,callbackOnMainThread? handler:null, timeout, listener));
+        executorService.execute(new RequestClient(url, method.getMethod(), requestJson, callbackOnMainThread ? handler : null, timeout, listener));
+    }
+
+    public static void uploadFiles(String url, List<String> uploadFiles, boolean callbackOnMainThread, onUploadFileCallbackListener listener) {
+        if (handler == null) {
+            handler = new Handler(Looper.getMainLooper());
+        }
+        executorService.execute(new RequestClientUnloadFile(url, uploadFiles, callbackOnMainThread ? handler : null, timeout, listener));
+    }
+
+    public static void downloadFile(String url, String fileDir, boolean callbackOnMainThread, onDownloadFileCallbackListener listener) {
+        if (handler == null) {
+            handler = new Handler(Looper.getMainLooper());
+        }
+        executorService.execute(new RequestClientDownloadFile(url, fileDir, callbackOnMainThread ? handler : null, timeout, listener));
     }
 
     public static HttpResponse RequestSync(String url, Method method, String requestJson) throws Exception {

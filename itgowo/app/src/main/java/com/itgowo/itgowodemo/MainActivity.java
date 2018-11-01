@@ -11,7 +11,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-       Test.testHttp();
+        Test.testUpload();
+//       Test.testDownloadFile();
 //       Test.testHttpSync();
 //        final String jsonstr = new Gson().toJson(new Entity().setAge(22).setName("aaaadfa"));
 //        itgowo.netTool().initHttpClient(new itgowoNetTool.onRequestDataListener() {
